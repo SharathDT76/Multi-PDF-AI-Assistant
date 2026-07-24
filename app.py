@@ -28,6 +28,7 @@ def main():
     vector_store = VectorStore()    
     print("Building FAISS index...")
     vector_store.build_index(chunks)
+    vector_store.save_index()
 
 if __name__ == "__main__":
     main()
