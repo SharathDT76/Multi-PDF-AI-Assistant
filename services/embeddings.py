@@ -19,5 +19,5 @@ class EmbeddingService:
             show_progress_bar=True,
         )
         for chunk , embedding in zip(chunks,embeddings):
-            chunk["embedding"] = embeddings.tolist()
+            chunk["embedding"] = embedding.tolist()
         return chunks

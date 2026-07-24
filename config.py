@@ -21,3 +21,9 @@ OLLAMA_MODEL = "llama3"
 
 # Logging
 LOG_FILE = "logs/app.log"
+
+#Embedding Model
+
+EMBEDDING_MODEL  = "BAAI/bge-m3"  # Can replace the model later with any model
+
+FAISS_INDEX_PATH = "storage/faiss_index/index.faiss"
