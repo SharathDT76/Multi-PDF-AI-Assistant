@@ -1,4 +1,5 @@
 import json
+import numpy as np
 from sentence_transformers import SentenceTransformer
 from config import EMBEDDING_MODEL
 from services.vector_store import VectorStore
@@ -22,5 +23,28 @@ class Retriever:
         print(f"Loaded{len(self.chunks)} chunks.")
         print("retriever initialized successfully.")
 
-    def search(self , question, top_k = 3):
+    def query_embedding(self,question):
         pass
+
+    def search(self , question, top_k = 3):
+        #Step 1: Generate embedding for the question
+        query_embedding = self.embedding_model.encode([question])
+
+        #Step 2 :Convert to floast32 Numpy array
+        query_embedding = np.array(
+            query_embedding,
+            dtype = np.float32
+        )
+
+        #Step 3: Search Faiss
+
+        distances, indices = self.vector_store.index.search(
+            query_embedding,
+            top_k
+        )
+
+        #Step 4 : Collect the matching chunks
+        results = []
+        for index in indices[0]:
+            results.append(self.chunks[index])
+        return results
