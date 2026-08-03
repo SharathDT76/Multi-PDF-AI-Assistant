@@ -1,78 +1,78 @@
 [
     {
-        "id": "Java String Methods.pdf_page_1_chunk_1",
+        "id": "Java_String_Methods.pdf_page_1_chunk_1",
         "content": "If you're preparing for LeetCode in Java, you don't need every method in the Java API.\nYou need the methods that are commonly used in DSA.\n1. String Methods ( java.lang.String )\nMethod\nDescription\nExample\nlength()\nReturns length\n\"abc\".length() → 3\ncharAt(i)\nCharacter at index\n\"abc\".charAt(1) → 'b'\nsubstring(start)\nFrom index to end\n\"hello\".substring(2) →\n\"llo\"\nsubstring(start,end)\nPart of string\n\"hello\".substring(1,4) →\n\"ell\"\nequals(str)\nCompare strings\n\"abc\".equals(\"abc\")\nequalsIgnoreCase(str)\nIgnore case\n\"ABC\".equalsIgnoreCase(\"abc\"\n)\ncompareTo(str)\nLexicographical comparison\n\"abc\".compareTo(\"abd\")\ncontains(str)\nCheck substring\n\"hello\".contains(\"ell\")\nstartsWith(str)\nPrefix check\n\"apple\".startsWith(\"app\")\nendsWith(str)\nSuffix check\n\"apple\".endsWith(\"ple\")\nindexOf(ch)\nFirst occurrence\n\"ba",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 1,
         "chunk_id": 1
     },
     {
-        "id": "Java String Methods.pdf_page_1_chunk_2",
+        "id": "Java_String_Methods.pdf_page_1_chunk_2",
         "content": "tartsWith(\"app\")\nendsWith(str)\nSuffix check\n\"apple\".endsWith(\"ple\")\nindexOf(ch)\nFirst occurrence\n\"banana\".indexOf('a')\nindexOf(str)\nFirst substring\n\"banana\".indexOf(\"na\")\nlastIndexOf(ch)\nLast occurrence\n\"banana\".lastIndexOf('a')\nisEmpty()\nEmpty string?\n\"\".isEmpty()\nisBlank()\nEmpty or spaces (Java 11+)\n\" \".isBlank()\ntoLowerCase()\nLowercase\n\"ABC\".toLowerCase()\ntoUpperCase()\nUppercase\n\"abc\".toUpperCase()",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 1,
         "chunk_id": 2
     },
     {
-        "id": "Java String Methods.pdf_page_2_chunk_1",
+        "id": "Java_String_Methods.pdf_page_2_chunk_1",
         "content": "Method\nDescription\nExample\ntrim()\nRemove leading/trailing\nspaces\n\" hi \".trim()\nstrip()\nUnicode-aware trim\n\" hi \".strip()\nreplace(old,new)\nReplace chars/string\n\"aabb\".replace('a','c')\nreplaceAll(regex,new)\nRegex replace\n\"123abc\".replaceAll(\"\\\\d\",\"\"\n)\nsplit(regex)\nSplit string\n\"a,b,c\".split(\",\")\nconcat(str)\nConcatenate\n\"Hi\".concat(\" All\")\nrepeat(n)\nRepeat string\n\"ab\".repeat(3)\nmatches(regex)\nRegex matching\n\"123\".matches(\"\\\\d+\")\ntoCharArray()\nConvert to char array\n\"abc\".toCharArray()\nintern()\nString pool\nRarely used\nvalueOf(x)\nConvert object/primitive to\nstring\nString.valueOf(123)\njoin(delimiter,...)\nJoin strings\nString.join(\"-\",a,b)\nformat()\nFormat strings\nString.format(\"%d\",10)\n2. StringBuilder Methods\nVery important for interviews.\nMethod\nExample\nappend()\nsb.append(\"abc\")\ninsert()\nsb.inser",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 2,
         "chunk_id": 1
     },
     {
-        "id": "Java String Methods.pdf_page_2_chunk_2",
+        "id": "Java_String_Methods.pdf_page_2_chunk_2",
         "content": "er Methods\nVery important for interviews.\nMethod\nExample\nappend()\nsb.append(\"abc\")\ninsert()\nsb.insert(1,\"x\")\nStringBuilder sb = new StringBuilder();\nJava",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 2,
         "chunk_id": 2
     },
     {
-        "id": "Java String Methods.pdf_page_3_chunk_1",
+        "id": "Java_String_Methods.pdf_page_3_chunk_1",
         "content": "Method\nExample\ndelete()\nsb.delete(2,5)\ndeleteCharAt()\nsb.deleteCharAt(0)\nreplace()\nsb.replace(1,3,\"hi\")\nreverse()\nsb.reverse()\ncharAt()\nsb.charAt(2)\nsetCharAt()\nsb.setCharAt(1,'a')\nlength()\nsb.length()\ncapacity()\nsb.capacity()\nsetLength()\nsb.setLength(5)\nsubstring()\nsb.substring(2)\ntoString()\nConvert to String\n3. Character Class Methods ( Character )\nUseful in string questions.\nMethod\nExample\nisDigit(c)\n'5'\nisLetter(c)\n'A'\nisLetterOrDigit(c)\n'A'\nisUpperCase(c)\n'A'\nisLowerCase(c)\n'a'\ntoUpperCase(c)\n'a' → 'A'\ntoLowerCase(c)\n'A' → 'a'\nisWhitespace(c)\n' '",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 3,
         "chunk_id": 1
     },
     {
-        "id": "Java String Methods.pdf_page_4_chunk_1",
+        "id": "Java_String_Methods.pdf_page_4_chunk_1",
         "content": "4. Array Methods ( java.util.Arrays )\nImport:\nMethod\nExample\nsort(arr)\nAscending sort\nparallelSort(arr)\nMulti-threaded sort\nbinarySearch(arr,key)\nSearch sorted array\nfill(arr,val)\nFill entire array\ncopyOf(arr,n)\nCopy first n elements\ncopyOfRange(arr,a,b)\nCopy range\nequals(arr1,arr2)\nCompare arrays\ndeepEquals()\nCompare 2D arrays\ncompare()\nLexicographical comparison\nmismatch()\nFirst differing index\ntoString(arr)\nPrint array\ndeepToString(arr)\nPrint 2D array\nstream(arr)\nConvert to Stream\nsetAll(arr,...)\nInitialize\nparallelSetAll()\nParallel initialization\nExample:\nimport java.util.Arrays;\nJava\nJava",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 4,
         "chunk_id": 1
     },
     {
-        "id": "Java String Methods.pdf_page_5_chunk_1",
+        "id": "Java_String_Methods.pdf_page_5_chunk_1",
         "content": "Output\n5. Array Utility Methods (Manual)\nThese are not methods on arrays, but operations you'll use constantly.\nLength\nClone\nIterate\nConvert Array to List\n(Works directly only with object arrays like String[] , not primitive arrays such as int[] .)\n6. Common Array Operations\nint[] nums = {5,2,7};\nArrays.sort(nums);\nSystem.out.println(Arrays.toString(nums));\n[2,5,7]\narr.length\nint[] copy = arr.clone();\nfor(int num : arr)\nArrays.asList(arr)\nJava\nJava\nJava\nJava",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 5,
         "chunk_id": 1
     },
     {
-        "id": "Java String Methods.pdf_page_6_chunk_1",
+        "id": "Java_String_Methods.pdf_page_6_chunk_1",
         "content": "Find Maximum\nFind Minimum\nReverse Array\nSum\nint max = Integer.MIN_VALUE;\nfor(int x : arr)\n    max = Math.max(max, x);\nint min = Integer.MAX_VALUE;\nfor(int x : arr)\n    min = Math.min(min, x);\nint left = 0;\nint right = arr.length - 1;\nwhile(left < right){\n    int temp = arr[left];\n    arr[left] = arr[right];\n    arr[right] = temp;\n    left++;\n    right--;\n}\nint sum = 0;\nJava\nJava\nJava\nJava",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 6,
         "chunk_id": 1
     },
     {
-        "id": "Java String Methods.pdf_page_7_chunk_1",
+        "id": "Java_String_Methods.pdf_page_7_chunk_1",
         "content": "Copy\n7. Math Methods Frequently Used\nMethod\nExample\nMath.max()\nMath.max(a,b)\nMath.min()\nMath.min(a,b)\nMath.abs()\nAbsolute value\nMath.pow()\nPower\nMath.sqrt()\nSquare root\nMath.ceil()\nRound up\nMath.floor()\nRound down\nMath.round()\nRound nearest\nMath.random()\nRandom number\n8. Most Important Methods for LeetCode\nThese are the ones you'll use in a large percentage of string and array problems.\nStrings\nlength()\ncharAt()\nsubstring()\nfor(int x : arr)\n    sum += x;\nint[] copy = Arrays.copyOf(arr, arr.length);\nJava",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 7,
         "chunk_id": 1
     },
     {
-        "id": "Java String Methods.pdf_page_8_chunk_1",
+        "id": "Java_String_Methods.pdf_page_8_chunk_1",
         "content": "equals()\ncontains()\nindexOf()\nlastIndexOf()\nstartsWith()\nendsWith()\nreplace()\nsplit()\ntoCharArray()\ntoLowerCase()\ntoUpperCase()\ntrim()\nStringBuilder\nappend()\ndelete()\ninsert()\nreverse()\nsetCharAt()\ncharAt()\ntoString()\nArrays\nArrays.sort()\nArrays.binarySearch()\nArrays.fill()\nArrays.copyOf()\nArrays.copyOfRange()\nArrays.equals()\nArrays.toString()\nArrays.deepToString()\narr.length\narr.clone()\nCharacter\nCharacter.isDigit()\nCharacter.isLetter()\nCharacter.isLetterOrDigit()\nCharacter.toUpperCase()",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 8,
         "chunk_id": 1
     },
     {
-        "id": "Java String Methods.pdf_page_9_chunk_1",
+        "id": "Java_String_Methods.pdf_page_9_chunk_1",
         "content": "Character.toLowerCase()\nMastering these methods will cover the vast majority of string and array problems on\nLeetCode, especially the Easy and Medium difficulty levels.",
-        "source": "Java String Methods.pdf",
+        "source": "Java_String_Methods.pdf",
         "page": 9,
         "chunk_id": 1
     }
