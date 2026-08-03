@@ -3,6 +3,7 @@ from services.chunking import TextChunker
 from services.embeddings import EmbeddingService
 from services.vector_store import VectorStore
 from services.retriever import Retriever
+from services.prompt_builder import PromptBuilder
 
 from utils.file_utils import save_chunks
 
@@ -23,45 +24,72 @@ def build_knowledge_base():
     print("\nChunking documents...")
     chunker = TextChunker()
     chunks = chunker.chunk_documents(documents)
+
     save_chunks(chunks)
+
     print(f"Created {len(chunks)} chunks")
 
     # Step 3 : Generate Embeddings
     print("\nGenerating embeddings...")
     embedding_service = EmbeddingService()
+
     chunks = embedding_service.generate_embeddings(chunks)
+
     print("Embeddings generated successfully.")
 
-    # Step 4 : Build FAISS
+    # Step 4 : Build FAISS Index
     print("\nBuilding FAISS Index...")
     vector_store = VectorStore()
+
     vector_store.build_index(chunks)
     vector_store.save_index()
-    print("Knowledge Base Created Successfully!")
+
+    print("\nKnowledge Base Created Successfully!")
+
     return len(chunks)
 
 
 def ask_question(question):
+
     print("=" * 80)
     print("QUESTION")
     print("=" * 80)
     print(question)
+
+    # Retrieve relevant chunks
     retriever = Retriever()
-    results = retriever.search(question)
-    print("\nRetrieved Chunks\n")
-    for i, result in enumerate(results, start=1):
-        print("=" * 80)
-        print(f"Result #{i}")
-        print(f"Source : {result['source']}")
-        print(f"Page   : {result['page']}")
-        print("-" * 80)
-        print(result["content"])
-        print("=" * 80)
-    return results
+    retrieved_chunks = retriever.search(question)
+    print(f"Retrieved {len(retrieved_chunks)} chunks")
+
+    # Build prompt for the LLM
+    prompt_builder = PromptBuilder()
+    # prompt = prompt_builder.build_prompt(
+    #     question,
+    #     retrieved_chunks
+    # )
+    prompt = prompt_builder.build_prompt(question, retrieved_chunks)
+
+    print("Number of QUESTION headers:", prompt.count("QUESTION"))
+    print("Number of ANSWER headers:", prompt.count("ANSWER"))
+
+    return prompt
+
 
 def main():
-    build_knowledge_base()
-    ask_question("What is StringBuilder?")
+
+    # Build Knowledge Base
+    # build_knowledge_base()
+
+    # Example Question
+    question = "What is StringBuilder?"
+
+    prompt = ask_question(question)
+
+    print("\n" + "=" * 80)
+    print("PROMPT SENT TO LLM")
+    print("=" * 80)
+    print(prompt)
+
 
 if __name__ == "__main__":
     main()

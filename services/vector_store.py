@@ -15,8 +15,8 @@ class VectorStore:
             embeddings,
             dtype = np.float32
         )
-        print(type(embedding_matrix))
-        print(embedding_matrix.shape)
+        # print(type(embedding_matrix))
+        # print(embedding_matrix.shape)
 
         dimension = embedding_matrix.shape[1]
 
