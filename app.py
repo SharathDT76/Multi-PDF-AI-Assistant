@@ -4,6 +4,7 @@ from services.embeddings import EmbeddingService
 from services.vector_store import VectorStore
 from services.retriever import Retriever
 from services.prompt_builder import PromptBuilder
+from services.llm import LLMService
 
 from utils.file_utils import save_chunks
 
@@ -54,25 +55,25 @@ def ask_question(question):
     print("=" * 80)
     print("QUESTION")
     print("=" * 80)
+
     print(question)
 
-    # Retrieve relevant chunks
     retriever = Retriever()
+
     retrieved_chunks = retriever.search(question)
-    print(f"Retrieved {len(retrieved_chunks)} chunks")
 
-    # Build prompt for the LLM
     prompt_builder = PromptBuilder()
-    # prompt = prompt_builder.build_prompt(
-    #     question,
-    #     retrieved_chunks
-    # )
-    prompt = prompt_builder.build_prompt(question, retrieved_chunks)
 
-    print("Number of QUESTION headers:", prompt.count("QUESTION"))
-    print("Number of ANSWER headers:", prompt.count("ANSWER"))
+    prompt = prompt_builder.build_prompt(
+        question,
+        retrieved_chunks
+    )
 
-    return prompt
+    llm = LLMService()
+
+    answer = llm.generate_response(prompt)
+
+    return answer
 
 
 def main():

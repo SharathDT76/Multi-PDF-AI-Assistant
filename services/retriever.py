@@ -1,18 +1,22 @@
 import json
-import numpy as np
-from sentence_transformers import SentenceTransformer
-from config import EMBEDDING_MODEL
+
+from services.embeddings import EmbeddingService
 from services.vector_store import VectorStore
+
 
 class Retriever:
 
     def __init__(self):
         print("Initializing Retriever...")
-        self.embedding_model = SentenceTransformer(
-            EMBEDDING_MODEL
-        )
+
+        # Embedding Service
+        self.embedding_service = EmbeddingService()
+
+        # Load FAISS Index
         self.vector_store = VectorStore()
         self.vector_store.load_index()
+
+        # Load Chunk Metadata
         with open(
             "storage/metadata/chunks.json",
             "r",
@@ -21,28 +25,31 @@ class Retriever:
             self.chunks = json.load(file)
 
         print(f"Loaded {len(self.chunks)} chunks.")
-        print("retriever initialized successfully.")
+        print("Retriever initialized successfully.")
 
-    def query_embedding(self,question):
-        embedding = self.embedding_model.encode([question])
-        return np.array(
-            embedding,
-            dtype = np.float32
+    def search(self, question, top_k=3):
+        """
+        Retrieve the most relevant chunks for a user question.
+        """
+
+        # Step 1: Generate query embedding
+        query_embedding = self.embedding_service.generate_query_embedding(
+            question
         )
 
-    def search(self , question, top_k = 3):
-        #Step 1: Generate embedding for the question
-        query_embedding = self.query_embedding(question)
-
-        #Step 2: Search Faiss
-
+        # Step 2: Search the FAISS index
         distances, indices = self.vector_store.index.search(
             query_embedding,
             top_k
         )
 
-        #Step 3 : Collect the matching chunks
+        # Step 3: Collect matching chunks
         results = []
+
         for index in indices[0]:
+            if index == -1:
+                continue
+
             results.append(self.chunks[index])
+
         return results
