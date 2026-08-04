@@ -8,7 +8,7 @@ function UploadSection({ onUploadSuccess }) {
     const [message, setMessage] = useState("");
 
     const handleFileChange = (event) => {
-        setSelectedFiles(event.target.files);
+        setSelectedFiles(Array.from(event.target.files));
     };
 
     const handleUpload = async () => {
@@ -20,9 +20,9 @@ function UploadSection({ onUploadSuccess }) {
 
         const formData = new FormData();
 
-        for (const file of selectedFiles) {
+        selectedFiles.forEach((file) => {
             formData.append("files", file);
-        }
+        });
 
         try {
 
@@ -42,7 +42,7 @@ function UploadSection({ onUploadSuccess }) {
             setMessage(response.data.message);
 
             if (response.data.success) {
-                onUploadSuccess();
+                onUploadSuccess(selectedFiles);
             }
 
         } catch (error) {
@@ -63,48 +63,101 @@ function UploadSection({ onUploadSuccess }) {
 
     return (
 
-        <div className="upload-container">
+        <div className="upload-screen">
 
-            <div className="upload-header">
+            <div className="upload-card">
 
-                <img
-                    src="/logo.png"
-                    alt="Logo"
-                    className="logo"
-                />
+                <div className="upload-mark">
+                    Marginalia
+                </div>
 
-                <h1>Multi-PDF AI Assistant</h1>
+                <h1 className="upload-title">
+                    Multi-PDF AI Assistant
+                </h1>
+
+                <p className="upload-subtitle">
+                    Upload one or more PDF documents and chat with them using AI.
+                </p>
+
+                <label className="dropzone">
+
+                    <input
+                        type="file"
+                        multiple
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                    />
+
+                    <div className="dropzone-icon">
+                        📚
+                    </div>
+
+                    <div className="dropzone-text">
+                        {selectedFiles.length === 0
+                            ? "Click to choose your PDF files"
+                            : `${selectedFiles.length} PDF(s) selected`}
+                    </div>
+
+                    <div className="dropzone-subtext">
+                        PDF files only • Multiple files supported
+                    </div>
+
+                </label>
+
+                {selectedFiles.length > 0 && (
+
+                    <div className="file-list">
+
+                        {selectedFiles.map((file, index) => (
+
+                            <div
+                                key={index}
+                                className="file-list-item"
+                            >
+
+                                <span className="ext">
+                                    PDF
+                                </span>
+
+                                <span className="name">
+                                    {file.name}
+                                </span>
+
+                            </div>
+
+                        ))}
+
+                    </div>
+
+                )}
+
+                <button
+                    className="upload-btn"
+                    onClick={handleUpload}
+                    disabled={loading}
+                >
+
+                    {loading
+                        ? "Building Knowledge Base..."
+                        : "Upload PDFs"}
+
+                </button>
+
+                {message && (
+
+                    <div
+                        className={`upload-status ${
+                            message.toLowerCase().includes("success")
+                                ? "success"
+                                : "error"
+                        }`}
+                    >
+                        {message}
+                    </div>
+
+                )}
 
             </div>
-
-            <p className="subtitle">
-                Upload one or more PDF documents and chat with them using AI.
-            </p>
-
-            <input
-                type="file"
-                multiple
-                accept=".pdf"
-                onChange={handleFileChange}
-            />
-
-            <button
-                onClick={handleUpload}
-                disabled={loading}
-            >
-                {
-                    loading
-                        ? "Building Knowledge Base..."
-                        : "Upload PDFs"
-                }
-            </button>
-
-            {
-                message &&
-                <p className="message">
-                    {message}
-                </p>
-            }
 
         </div>
 

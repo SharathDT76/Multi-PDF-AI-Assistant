@@ -31,6 +31,6 @@ class KnowledgeBase:
         vector_store.save_index()
 
         return {
-            "documents": len(documents),
+            "documents": documents,
             "chunks": len(chunks)
         }
