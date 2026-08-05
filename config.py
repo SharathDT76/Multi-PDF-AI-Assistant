@@ -7,8 +7,8 @@ FAISS_INDEX_PATH = "storage/faiss_index/index.faiss"
 METADATA_PATH = "storage/metadata/metadata.pkl"
 
 # Chunking
-CHUNK_SIZE = 800
-CHUNK_OVERLAP = 100
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 120
 
 # Retrieval
 TOP_K = 5

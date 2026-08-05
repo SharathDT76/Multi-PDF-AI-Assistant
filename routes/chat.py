@@ -22,6 +22,15 @@ def chat():
 
     chunks = retriever.search(question)
 
+    if len(chunks) == 0:
+
+        return jsonify({
+            "success": True,
+            "question": question,
+            "answer": "I could not find enough relevant information in the uploaded documents.",
+            "sources": []
+        })
+
     prompt_builder = PromptBuilder()
 
     prompt = prompt_builder.build_prompt(
