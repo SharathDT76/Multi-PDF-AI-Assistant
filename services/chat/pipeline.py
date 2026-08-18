@@ -14,45 +14,46 @@ class ChatPipeline:
 
         self.preprocessor = QuestionPreprocessor()
         self.query_expander = QueryExpander()
+
         self.retriever = Retriever()
+
         self.prompt_builder = PromptBuilder()
         self.llm = LLMService()
+
         self.response_builder = ResponseBuilder()
 
     def execute(self, question):
 
         # --------------------------------------------------
-        # 1. Preprocess question
+        # 1. Preprocess
         # --------------------------------------------------
 
-        question = self.preprocessor.process(question)
-
-        # --------------------------------------------------
-        # 2. Expand question
-        # --------------------------------------------------
-
-        expanded_queries = self.query_expander.expand(
+        question = self.preprocessor.process(
             question
         )
 
-        print("\nExpanded Queries:")
-
-        for query in expanded_queries:
-            print(f" - {query}")
-
         # --------------------------------------------------
-        # 3. Retrieve relevant chunks
+        # 2. Query Expansion
         # --------------------------------------------------
 
-        chunks = self.retriever.search(
-            expanded_queries
+        expanded_queries = (
+            self.query_expander.expand(question)
         )
 
         # --------------------------------------------------
-        # 4. Check results
+        # 3. Hybrid Retrieval
         # --------------------------------------------------
 
-        if len(chunks) == 0:
+        chunks = self.retriever.search(
+            expanded_queries,
+            top_k=5
+        )
+
+        # --------------------------------------------------
+        # 4. No relevant information
+        # --------------------------------------------------
+
+        if not chunks:
 
             return self.response_builder.build(
                 question=question,
@@ -64,7 +65,7 @@ class ChatPipeline:
             )
 
         # --------------------------------------------------
-        # 5. Build prompt
+        # 5. Prompt
         # --------------------------------------------------
 
         prompt = self.prompt_builder.build_prompt(
@@ -73,7 +74,7 @@ class ChatPipeline:
         )
 
         # --------------------------------------------------
-        # 6. Generate answer
+        # 6. LLM
         # --------------------------------------------------
 
         answer = self.llm.generate_response(
@@ -81,7 +82,7 @@ class ChatPipeline:
         )
 
         # --------------------------------------------------
-        # 7. Build response
+        # 7. Response
         # --------------------------------------------------
 
         return self.response_builder.build(

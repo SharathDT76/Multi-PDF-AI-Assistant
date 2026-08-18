@@ -3,48 +3,83 @@ import json
 from services.embedding.embeddings import EmbeddingService
 from services.embedding.vector_store import VectorStore
 
+from services.retrieval.bm25_search import BM25Search
+from services.retrieval.reranker import Reranker
+
 
 class Retriever:
 
     def __init__(self):
 
         print("=" * 80)
-        print("Initializing Retriever...")
+        print("Initializing Hybrid Retriever...")
         print("=" * 80)
 
-        # Initialize Embedding Service
+        # --------------------------------------------------
+        # Embedding Service
+        # --------------------------------------------------
+
         self.embedding_service = EmbeddingService()
 
-        # Load FAISS Index
+        # --------------------------------------------------
+        # FAISS Vector Store
+        # --------------------------------------------------
+
         self.vector_store = VectorStore()
         self.vector_store.load_index()
 
-        # Load Chunk Metadata
+        # --------------------------------------------------
+        # Chunk Metadata
+        # --------------------------------------------------
+
         with open(
             "storage/metadata/chunks.json",
             "r",
             encoding="utf-8"
         ) as file:
+
             self.chunks = json.load(file)
 
-        print(f"Loaded {len(self.chunks)} chunks.")
-        print("Retriever initialized successfully.")
+        print(
+            f"Loaded {len(self.chunks)} chunks."
+        )
+
+        # --------------------------------------------------
+        # BM25
+        # --------------------------------------------------
+
+        self.bm25 = BM25Search()
+
+        # --------------------------------------------------
+        # Cross Encoder
+        # --------------------------------------------------
+
+        self.reranker = Reranker()
+
+        print("Hybrid Retriever initialized successfully.")
         print("=" * 80)
 
-    def _search_single_query(self, question, top_k=10):
+    # ======================================================
+    # VECTOR SEARCH
+    # ======================================================
+
+    def _vector_search(
+        self,
+        question,
+        top_k=10
+    ):
 
         query_embedding = (
-            self.embedding_service.generate_query_embedding(
-                question
+            self.embedding_service
+            .generate_query_embedding(question)
+        )
+
+        distances, indices = (
+            self.vector_store.index.search(
+                query_embedding,
+                top_k
             )
         )
-
-        distances, indices = self.vector_store.index.search(
-            query_embedding,
-            top_k
-        )
-
-        DISTANCE_THRESHOLD = 1.20
 
         results = []
 
@@ -56,118 +91,194 @@ class Retriever:
             if index == -1:
                 continue
 
-            if distance > DISTANCE_THRESHOLD:
-                continue
-
             chunk = self.chunks[index].copy()
 
-            chunk["score"] = float(distance)
+            chunk["vector_score"] = float(distance)
 
             results.append(chunk)
 
         return results
 
-    def search(self, question, top_k=10):
+    # ======================================================
+    # HYBRID SEARCH
+    # ======================================================
 
-        """
-        Search using either:
-
-        1. A single question string
-        2. A list of expanded queries
-        """
-
-        print("\nSearching for:", question)
+    def search(
+        self,
+        questions,
+        top_k=5
+    ):
 
         # --------------------------------------------------
-        # Convert single query into a list
+        # Accept either:
+        #
+        # "What is DFS?"
+        #
+        # OR
+        #
+        # [
+        #     "What is DFS?",
+        #     "Depth First Search",
+        #     "Graph Traversal"
+        # ]
         # --------------------------------------------------
 
-        if isinstance(question, str):
+        if isinstance(questions, str):
 
-            queries = [question]
+            queries = [questions]
 
         else:
 
-            queries = question
+            queries = questions
 
-        # --------------------------------------------------
-        # Search every query
-        # --------------------------------------------------
+        print("\n" + "=" * 80)
+        print("HYBRID RETRIEVAL")
+        print("=" * 80)
 
-        all_results = []
+        print("Queries:")
 
         for query in queries:
 
-            print(f"Searching query: {query}")
+            print(f"  - {query}")
 
-            results = self._search_single_query(
+        # --------------------------------------------------
+        # Candidate storage
+        # --------------------------------------------------
+
+        candidates = {}
+
+        # --------------------------------------------------
+        # Search every expanded query
+        # --------------------------------------------------
+
+        for query in queries:
+
+            # ==============================================
+            # FAISS
+            # ==============================================
+
+            vector_results = self._vector_search(
                 query,
-                top_k
+                top_k=10
             )
 
-            all_results.extend(results)
+            # ==============================================
+            # BM25
+            # ==============================================
+
+            bm25_results = self.bm25.search(
+                query,
+                top_k=10
+            )
+
+            # ==============================================
+            # Add FAISS results
+            # ==============================================
+
+            for chunk in vector_results:
+
+                chunk_id = chunk["id"]
+
+                if chunk_id not in candidates:
+
+                    candidates[chunk_id] = chunk
+
+                else:
+
+                    existing = candidates[chunk_id]
+
+                    if (
+                        "vector_score" not in existing
+                        or chunk["vector_score"]
+                        < existing["vector_score"]
+                    ):
+
+                        existing["vector_score"] = (
+                            chunk["vector_score"]
+                        )
+
+            # ==============================================
+            # Add BM25 results
+            # ==============================================
+
+            for chunk in bm25_results:
+
+                chunk_id = chunk["id"]
+
+                if chunk_id not in candidates:
+
+                    candidates[chunk_id] = chunk
+
+                else:
+
+                    existing = candidates[chunk_id]
+
+                    if "bm25_score" in chunk:
+
+                        if (
+                            "bm25_score" not in existing
+                            or chunk["bm25_score"]
+                            > existing["bm25_score"]
+                        ):
+
+                            existing["bm25_score"] = (
+                                chunk["bm25_score"]
+                            )
 
         # --------------------------------------------------
-        # Remove duplicate chunks
+        # Convert dictionary to list
         # --------------------------------------------------
 
-        unique_results = {}
+        candidate_chunks = list(
+            candidates.values()
+        )
 
-        for chunk in all_results:
-
-            chunk_id = chunk["id"]
-
-            # Keep the best score
-            if (
-                chunk_id not in unique_results
-                or chunk["score"] < unique_results[chunk_id]["score"]
-            ):
-
-                unique_results[chunk_id] = chunk
-
-        results = list(unique_results.values())
-
-        # --------------------------------------------------
-        # Sort by relevance
-        # Lower FAISS L2 distance = better match
-        # --------------------------------------------------
-
-        results.sort(
-            key=lambda x: x["score"]
+        print(
+            f"\nCandidate chunks before reranking: "
+            f"{len(candidate_chunks)}"
         )
 
         # --------------------------------------------------
-        # Keep final top results
+        # Nothing found
         # --------------------------------------------------
 
-        results = results[:5]
+        if not candidate_chunks:
+
+            print("No candidates found.")
+
+            return []
 
         # --------------------------------------------------
-        # Debug information
+        # Cross Encoder Reranking
         # --------------------------------------------------
 
-        print("\n" + "=" * 80)
-        print("Top Retrieved Chunks")
-        print("=" * 80)
+        reranked_chunks = self.reranker.rerank(
+            queries[0],
+            candidate_chunks,
+            top_k=top_k
+        )
 
-        if len(results) == 0:
+        # --------------------------------------------------
+        # Debug
+        # --------------------------------------------------
 
-            print("No relevant chunks found.")
+        print("\n" + "-" * 80)
+        print("FINAL RERANKED RESULTS")
+        print("-" * 80)
 
-        else:
+        for i, chunk in enumerate(
+            reranked_chunks,
+            start=1
+        ):
 
-            for i, chunk in enumerate(
-                results,
-                start=1
-            ):
+            print(
+                f"{i}. "
+                f"{chunk['source']} | "
+                f"Page {chunk['page']} | "
+                f"Rerank = "
+                f"{chunk.get('rerank_score', 0):.4f}"
+            )
 
-                print(
-                    f"{i}. "
-                    f"{chunk['source']} | "
-                    f"Page {chunk['page']} | "
-                    f"Distance = {chunk['score']:.4f}"
-                )
+        print("-" * 80)
 
-        print("=" * 80 + "\n")
-
-        return results
+        return reranked_chunks

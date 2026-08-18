@@ -5,17 +5,25 @@ class Reranker:
 
     def __init__(self):
 
+        print("=" * 80)
         print("Loading Cross Encoder...")
+        print("=" * 80)
 
         self.model = CrossEncoder(
             "cross-encoder/ms-marco-MiniLM-L-6-v2"
         )
 
         print("Cross Encoder Ready.")
+        print("=" * 80)
 
-    def rerank(self, question, chunks, top_k=5):
+    def rerank(
+        self,
+        question,
+        chunks,
+        top_k=5
+    ):
 
-        if len(chunks) == 0:
+        if not chunks:
             return []
 
         pairs = []
@@ -31,13 +39,19 @@ class Reranker:
 
         scores = self.model.predict(pairs)
 
+        reranked = []
+
         for chunk, score in zip(chunks, scores):
 
-            chunk["rerank_score"] = float(score)
+            data = chunk.copy()
 
-        chunks.sort(
+            data["rerank_score"] = float(score)
+
+            reranked.append(data)
+
+        reranked.sort(
             key=lambda x: x["rerank_score"],
             reverse=True
         )
 
-        return chunks[:top_k]
+        return reranked[:top_k]
