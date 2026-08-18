@@ -272,13 +272,19 @@ class Retriever:
         ):
 
             print(
-                f"{i}. "
+                f"\n{i}. "
                 f"{chunk['source']} | "
                 f"Page {chunk['page']} | "
                 f"Rerank = "
                 f"{chunk.get('rerank_score', 0):.4f}"
             )
 
-        print("-" * 80)
+            print("-" * 60)
+
+            print(
+                chunk["content"][:500]
+            )
+
+            print("-" * 60)
 
         return reranked_chunks

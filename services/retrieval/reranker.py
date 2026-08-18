@@ -54,4 +54,16 @@ class Reranker:
             reverse=True
         )
 
-        return reranked[:top_k]
+        # --------------------------------------------------
+        # Relevance threshold
+        # --------------------------------------------------
+
+        MIN_RERANK_SCORE = -5.0
+
+        filtered = [
+            chunk
+            for chunk in reranked
+            if chunk["rerank_score"] >= MIN_RERANK_SCORE
+        ]
+
+        return filtered[:top_k]
