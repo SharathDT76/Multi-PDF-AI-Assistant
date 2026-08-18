@@ -1,7 +1,7 @@
-from services.pdf_loader import PDFLoader
-from services.chunking import TextChunker
-from services.embeddings import EmbeddingService
-from services.vector_store import VectorStore
+from services.document.pdf_loader import PDFLoader
+from services.document.chunking import TextChunker
+from services.embedding.embeddings import EmbeddingService
+from services.embedding.vector_store import VectorStore
 from utils.file_utils import save_chunks
 
 

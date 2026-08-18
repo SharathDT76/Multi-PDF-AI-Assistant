@@ -177,7 +177,7 @@ function App() {
 
                     question={question}
 
-                    setQuestion={setQuestion}
+                    onChange={setQuestion}
 
                     onSend={handleSend}
 

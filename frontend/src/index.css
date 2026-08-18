@@ -1,0 +1,32 @@
+:root {
+    --bg: #f5f2ea;
+    --paper: #fffdf8;
+    --ink: #1d2b27;
+    --accent: #8b6b2e;
+    --border: #d8cfb8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
